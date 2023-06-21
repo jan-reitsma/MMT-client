@@ -1,13 +1,16 @@
 from modernmt import ModernMT
 import pyperclip as clip
 import tkinter as tk
-from time import sleep
+from tkinter import ttk
+
 mmt = ModernMT('7763DBAD-DB02-9C5C-5DA0-B543BE3D7D34')
 
-window = tk.Tk()
+root = tk.Tk()
+root.title("Easy MT")
+root.geometry("400x500")
 
-#def handle_keypress(event):
-#    print(event.char)
+def return_pressed(event):
+    button_clicked()
 def button_clicked():
     if entry.get() != "":
         src = entry.get()
@@ -17,42 +20,58 @@ def button_clicked():
         src = clip.paste()
         translate(src)
     else:
-        pass
+        outp.delete("1.0", tk.END)  # empty output text box
+        comment["text"] = "Nothing to translate!"
+        quality["text"] = ""
 
 def translate(src):
+    entry.delete("0", tk.END)
     outp.delete("1.0", tk.END)  # empty output text box
+    comment["text"] = ""
+    lang["text"] = ""
     srcLng = mmt.detect_language(src).detectedLanguage
     lang["text"] = srcLng
     try:
         result = mmt.translate(srcLng, "nl", src)
         trg = result.translation
         outp.insert(tk.END, trg)
-        comment["text"] = "translation copied to clipboard"
+        comment["text"] = "Translation copied to clipboard."
         clip.copy(trg)
+        qEst = mmt.qe(srcLng, "nl", src, trg)
+        quality["text"] = f"Quality estimation: {qEst.score}"
     except:
-        comment["text"] = "source and target language cannot be the same"
+        comment["text"] = "Error: Source and target language cannot be the same!"
 
-label = tk.Label(text="MMT translator")
-entry = tk.Entry(width=100)
-lbl_lang = tk.Label(text="Lang detected:")
-lang = tk.Label(width=10)
-comment = tk.Label(width=50)
-outp = tk.Text()
-button = tk.Button(
-    text="click here to translate",
-    command=button_clicked
-)
+        lang["text"] = ""
+        quality["text"] = ""
 
-label.pack()
-entry.pack()
-lbl_lang.pack()
-lang.pack()
-outp.pack()
-comment.pack()
-button.pack()
+fields = {}
+
+fields['label'] = tk.Label(text='Enter source text or leave empty to use clipboard:')
+fields['entry'] = tk.Entry(width=200)
+fields['lbl_lang'] = tk.Label(text='Language detected:')
+fields['lang'] = tk.Label()
+fields['comment'] = tk.Label(width= 50)
+fields['quality'] = tk.Label(width= 20)
+fields['button'] = tk.Button(text="Click here to translate or hit RETURN", command=button_clicked)
+fields['outp'] = tk.Text()
+
+
+label = fields['label']
+entry = fields['entry']
+lbl_lang = fields['lbl_lang']
+lang = fields['lang']
+comment = fields['comment']
+quality = fields['quality']
+button = fields['button']
+outp = fields['outp']
+
+for field in fields.values():
+    field.pack(padx=10, pady=5, fill=tk.X)
 
 '''#bind callback method of window to "<Key>" :
 window.bind("<Key>", handle_keypress)
 '''
+root.bind('<Return>', return_pressed)
 
-window.mainloop()
+root.mainloop()
