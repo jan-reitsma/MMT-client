@@ -1,77 +1,124 @@
 from modernmt import ModernMT
 import pyperclip as clip
 import tkinter as tk
-from tkinter import ttk
+class Model:
+    def __init__(self, APIKey):
+        self.mmt = ModernMT(APIKey)
+        self.presenter = None
+        print("Model init ok")
 
-mmt = ModernMT('7763DBAD-DB02-9C5C-5DA0-B543BE3D7D34')
+    def setPresenter(self, pres):
+        self.presenter = pres
 
-root = tk.Tk()
-root.title("Easy MT")
-root.geometry("400x500")
+    def translate(self, src):
+        view.reset_fields()
+        try:
+            detected_language = self.mmt.detect_language(src).detectedLanguage
+        except:
+            view.set_field('comment', 'text', "Error: no language detected")
 
-def return_pressed(event):
-    button_clicked()
-def button_clicked():
-    if entry.get() != "":
-        src = entry.get()
-        translate(src)
+        try:
+            result = self.mmt.translate(detected_language, "nl", src)
+            translation = result.translation
+            quality_estimation = self.mmt.qe(detected_language, "nl", src, translation)
+            score = f"Quality estimation: {quality_estimation.score}"
 
-    elif clip.paste() != "":
-        src = clip.paste()
-        translate(src)
-    else:
-        outp.delete("1.0", tk.END)  # empty output text box
-        comment["text"] = "Nothing to translate!"
-        quality["text"] = ""
+            # copy translation to clipboard
+            clip.copy(translation)
 
-def translate(src):
-    entry.delete("0", tk.END)
-    outp.delete("1.0", tk.END)  # empty output text box
-    comment["text"] = ""
-    lang["text"] = ""
-    srcLng = mmt.detect_language(src).detectedLanguage
-    lang["text"] = srcLng
-    try:
-        result = mmt.translate(srcLng, "nl", src)
-        trg = result.translation
-        outp.insert(tk.END, trg)
-        comment["text"] = "Translation copied to clipboard."
-        clip.copy(trg)
-        qEst = mmt.qe(srcLng, "nl", src, trg)
-        quality["text"] = f"Quality estimation: {qEst.score}"
-    except:
-        comment["text"] = "Error: Source and target language cannot be the same!"
+            # filling the fields in the window
+            view.set_field('quality', 'text', score)
+            view.set_field('lang', 'text', f"Language detected: {detected_language}")
+            view.set_field('comment', 'text', "some comment")
 
-        lang["text"] = ""
-        quality["text"] = ""
-
-fields = {}
-
-fields['label'] = tk.Label(text='Enter source text or leave empty to use clipboard:')
-fields['entry'] = tk.Entry(width=200)
-fields['lbl_lang'] = tk.Label(text='Language detected:')
-fields['lang'] = tk.Label()
-fields['comment'] = tk.Label(width= 50)
-fields['quality'] = tk.Label(width= 20)
-fields['button'] = tk.Button(text="Click here to translate or hit RETURN", command=button_clicked)
-fields['outp'] = tk.Text()
+            view.set_output_field(translation)
+            view.set_field('comment', 'text', "OK: Translation copied to clipboard.")
+        except:
+            view.set_field('comment', 'text', "Error: source and target language cannot be the same.")
 
 
-label = fields['label']
-entry = fields['entry']
-lbl_lang = fields['lbl_lang']
-lang = fields['lang']
-comment = fields['comment']
-quality = fields['quality']
-button = fields['button']
-outp = fields['outp']
+class View:
+    def __init__(self):
+        self.presenter = None
+        self.root = tk.Tk()
+        self.root.title("MMT Client")
+        self.root.geometry("400x500")
+        self.fields = {}
+        self.init_fields()
+        self._insert_fields()
+        self.root.bind('<Return>', self._return_pressed)
 
-for field in fields.values():
-    field.pack(padx=10, pady=5, fill=tk.X)
+    def set_presenter(self, presenter):
+        self.presenter = presenter
+    def init_fields(self):
+        self.fields['label'] = tk.Label(text='Enter source text or leave empty to use clipboard:')
+        self.fields['entry'] = tk.Entry(width=200)
+        self.fields['lang'] = tk.Label()
+        self.fields['comment'] = tk.Label(width=50)
+        self.fields['quality'] = tk.Label(width=20)
+        self.fields['button'] = tk.Button(text="Click here to translate or hit RETURN", command=self._button_clicked)
+        self.fields['outp'] = tk.Text()
 
-'''#bind callback method of window to "<Key>" :
-window.bind("<Key>", handle_keypress)
-'''
-root.bind('<Return>', return_pressed)
+    def reset_fields(self):
+        self.fields['lang']['text'] = ""
+        self.fields['comment']['text'] = ""
+        self.fields['quality']['text'] = ""
+        self.fields['entry'].delete("0", tk.END)
+        self.fields['outp'].delete("1.0", tk.END)
 
-root.mainloop()
+    def set_field(self, field, key, value):
+        self.fields[field][key] = value
+
+    def set_output_field(self, value):
+        self.fields['outp'].insert(tk.END, value)
+
+    def show(self):
+        self.root.mainloop()
+    def _insert_fields(self):
+        for field in self.fields.values():
+            field.pack(padx=10, pady=5, fill=tk.X)
+
+    def _button_clicked(self):
+        print("button clicked")
+        user_entry = self.fields['entry'].get()
+        if user_entry != "":
+            source = user_entry
+        else:
+            source = clip.paste()
+        self.presenter.translate(source)
+
+    def _return_pressed(self, event):
+        print("return pressed")
+        self._button_clicked()
+
+class Presenter:
+    def __init__(self, model, view):
+        self.model = model
+        self.view = view
+
+    def setModel(self, model):
+        self.model = model
+    def setView(self, view):
+        self.view = view
+
+    def translate(self, src):
+        trg = model.translate(src)
+        print(trg)
+
+    def test1(self):
+        print("presenter test 1")
+        self.view.init_fields()
+    def test2(self):
+        print("presenter test 2")
+
+
+APIKey = '7763DBAD-DB02-9C5C-5DA0-B543BE3D7D34'
+model = Model(APIKey)
+view = View()
+pres = Presenter(model, view)
+
+model.setPresenter(pres)
+view.set_presenter(pres)
+view.show()
+
+
