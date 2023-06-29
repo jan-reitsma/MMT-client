@@ -1,6 +1,5 @@
 ### GUI client for ModernMT machine translation API
 
-![](C:\Users\JR\PycharmProjects\MMTGUI\Screenshot.png)
 Note: You will need a paid subscription from [https://www.modernmt.com]() for this tool to work.
 
 API documentation by modernmt can be found here:

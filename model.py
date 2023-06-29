@@ -16,8 +16,6 @@ class Model:
 
     def translate(self, src, src_lang, trg_lang):
         detected = ''
-        # reset all fields:
-        self.presenter.reset_fields()
         # translate with source and target language:
         if src == "":
             self.presenter.set_field('self.comment', 'text', "Error: no text to translate")
