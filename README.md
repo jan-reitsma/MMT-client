@@ -9,8 +9,12 @@ There are countless machine translation services freely available,
 so why bother creating writing this tool?
 As a technical translator I am using CAT tools and which integrate
 machine translation services already. 
-For quick lookup of words, sentences, during work, this is a handy tool. 
-Useful information: it shows a quality estimation on each translation.
+But for quick lookup of words, sentences, during work, this is a handy tool. 
+Useful information: the window shows a quality estimation below each translation.
 
-As you can upload your own translation memories, ModernMT can use and update them.
-In a later version I will integrate a functionality to use user translation memories.
+Language settings can be done in the GUI and are saved in _settings.json_.
+
+As it is possible to upload your own translation memories to the ModernMT server, 
+and utilize them, I will improve this tool in future and add functionality 
+to utilize your own translation memories.
+
