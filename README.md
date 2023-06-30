@@ -14,7 +14,12 @@ machine translation services already.
 But for quick lookup of words, sentences, during work, this is a handy tool. 
 Useful information: the window shows a quality estimation below each translation.
 
-Language settings can be done in the GUI and are saved in _settings.json_.
+Your api key goes into a python file __key.py__ which contains only one line: 
+`key = 'your-api-key'`
+
+Language settings can be done in the GUI and are saved in _settings.json_ 
+or you can edit the json file by hand of course, additional languages can 
+added as well. I only use languages that are of interest for me.
 
 As it is possible to upload your own translation memories to the ModernMT server, 
 and utilize them, I will improve this tool in future and add functionality 
