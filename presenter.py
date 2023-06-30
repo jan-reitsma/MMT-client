@@ -35,10 +35,3 @@ class Presenter:
     def show_message(self, title, message):
         view.show_info(title, message)
 
-APIKey = '7763DBAD-DB02-9C5C-5DA0-B543BE3D7D34'
-model = Model(APIKey)
-view = View()
-pres = Presenter(model, view)
-model.set_presenter(pres)
-view.set_presenter(pres)
-view.show()
