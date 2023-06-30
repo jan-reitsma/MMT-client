@@ -18,7 +18,7 @@ Your api key goes into a python file __key.py__ which contains only one line:
 `key = 'your-api-key'`
 
 Language settings can be done in the GUI and are saved in _settings.json_ 
-or you can edit the json file by hand of course, additional languages can 
+or you can edit the json file by hand of course, additional languages can be
 added as well. I only use languages that are of interest for me.
 
 As it is possible to upload your own translation memories to the ModernMT server, 
