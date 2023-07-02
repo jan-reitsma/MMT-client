@@ -1,148 +1,115 @@
-import tkinter as tk
-from tkinter import ttk
-from tkinter.messagebox import showinfo, showerror, showwarning
+import PySimpleGUI as sg
 import json
 import pyperclip as clip
-
+sg.theme('DarkBlack')
 
 class View:
     def __init__(self):
         self.presenter = None
-        self.root = tk.Tk()
-        self.root.title("MMT Client")
-        self.root.geometry("700x570")
+        source_languages=['de', 'en', 'fr', 'nl', 'auto']
+        target_languages=['de', 'en', 'fr', 'nl']
+        self.source_language = None
+        self.target_language = None
+        layout = [[sg.Combo(source_languages, enable_events=True, default_value=None, key='combo_source_lang'),
+                  sg.Combo(target_languages, enable_events=True, default_value=None, key='combo_target_lang'), sg.Button
+                   ('Save', key='save_languages'), sg.Button('Load', key='load_languages')],
+                  [sg.Text(key='comment')],
+                  [sg.Text(key='quality')],
+                [sg.Text('Enter source text:')],
+                [sg.Multiline(key='source_text', size=(60,15))],
+                [sg.Text('Target text:')],
+                [sg.Multiline(key='target_text', size=(60,15))],
+                [sg.Submit(), sg.Button('Clear', key='clear'), sg.Button('Set Key', key='set_key'), sg.CloseButton('Close')]]
 
-        self.source_lang = ''
-        self.target_lang = ''
-        self._read_from_settings_file()
+        self.window = sg.Window('MMT Client', layout)
 
-        self.selected_source_language = tk.StringVar()
-        self.selected_target_language = tk.StringVar()
-
-        # a lot of widgets are created here:
-        self._init_settings_frame()
-        # and some here:
-        self._init_translation_frame()
-
-        self.root.bind('<Return>', self._return_pressed)
-
+    def show(self):
+        self.show_window()
     def set_presenter(self, presenter):
         self.presenter = presenter
 
-    def _read_from_settings_file(self):
-        # Open the file in read mode
-        with open('settings.json', 'r') as file:
-            try:
-                loaded_settings = json.load(file)
-                self.source_lang = loaded_settings["source language"]
-                print(f"source language from settings file: {self.source_lang}")
-                self.target_lang = loaded_settings["target language"]
-                print(f"target language from settings file: {self.target_lang}")
-            except Exception as e:
-                print(e)
-                raise
+    def show_window(self):
 
-    def _init_settings_frame(self):
-        settings_frame = tk.Frame(self.root, height=40, width=660, padx=5, pady=5)
-        settings_frame.grid(column=0, row=0, sticky="n")
-        settings_frame.grid_propagate(False)
-        paddings = {'padx': 5, 'pady': 2}
+        # should be run window
+        # from here all methods should be called:
+        # translate, save settings, etc. arguments will be sent to presenter,
+        while True:
+            event, values = self.window.read()
+            if self.source_language == None or self.target_language == None:
+                self._load_language_settings()
 
-        tk.Label(settings_frame, text="Select source language:").grid(column=0, row=0, sticky=tk.W, **paddings)
-        combo_source_language = ttk.Combobox(settings_frame, width=20, textvariable=self.selected_source_language)
-        combo_source_language['values'] = ['en', 'de', 'fr', 'nl', 'auto']
-        combo_source_language['state'] = 'readonly'
-        combo_source_language.bind('<<ComboboxSelected>>', self._combo_selected)
-        combo_source_language.set(self.source_lang)
-        combo_source_language.grid(column=1, row=0, sticky='w', **paddings)
+            # print(values['source_text'])
+            # self.window['target_text'].update(value='xxx')
+            match event:
+                case 'combo_source_lang':
+                    self.source_language = (values['combo_source_lang'])
+                case 'combo_target_lang':
+                    self.target_language = (values['combo_target_lang'])
+                case 'save_languages':
+                    self._save_language_settings()
+                    print("settings saved: ", self.source_language, self.target_language)
+                case 'load_languages':
+                    self._load_language_settings()
+                    print("settings loaded: ", self.source_language, self.target_language)
+                case 'Submit':
+                    self.presenter.translate(values['source_text'], self.source_language, self.target_language)
+                case 'clear':
+                    for element in values:
+                        self.update_element(element, '')
+                case 'set_key':
+                    self.set_key()
+                case 'set_key':
+                    pass
+            if event == sg.WIN_CLOSED or event == 'Exit':
+                break
 
-        tk.Label(settings_frame, text="Select target language:").grid(column=2, row=0, sticky=tk.W, **paddings)
-        combo_target_language = ttk.Combobox(settings_frame, width=20, textvariable=self.selected_target_language)
-        combo_target_language['values'] = ['en', 'de', 'fr', 'nl']
-        combo_target_language['state'] = 'readonly'
-        combo_target_language.bind('<<ComboboxSelected>>', self._combo_selected)
-        combo_target_language.set(self.target_lang)
-        combo_target_language.grid(column=3, row=0, sticky='w', **paddings)
+        self.window.close()
 
-        tk.Button(settings_frame, text=" Save ", command=self._save_button_clicked).grid(column=4, row=0, sticky=tk.W,
-                                                                                         **paddings)
-
-    def _init_translation_frame(self):
-        translation_frame = tk.Frame(self.root, width=700)
-        translation_frame.grid(column=0, row=1)
-
-        label = tk.Label(translation_frame, text='Enter source text or leave empty to use clipboard:')
-        self.input_text = tk.Text(translation_frame, height=9, width=78, padx=5, pady=5)
-
-        # scroll = ttk.Scrollbar(translation_frame, orient='vertical', command=self.input_text.yview)
-        # scroll.grid(column=1, row=0, sticky=tk.NS)
-        # self.input_text['yscrollcommand'] = scroll.set
-        self.input_text.focus()
-
-        # entry.focus()
-        self.comment = tk.Label(translation_frame, width=100)
-        self.quality = tk.Label(translation_frame, width=20)
-        button = tk.Button(translation_frame, text="Click here to translate or hit RETURN",
-                           command=self._button_clicked)
-        self.output_text = tk.Text(translation_frame, height=9, width=78, padx=5, pady=5)
-
-        # placing the fields:
-        label.grid(column=0, row=0, sticky="s", padx=5, pady=5)
-        self.input_text.grid(column=0, row=1, sticky="n", padx=5, pady=5)
-        button.grid(column=0, row=2, sticky="n", padx=5, pady=5)
-        self.output_text.grid(column=0, row=3, sticky="n", padx=5, pady=5)
-        self.comment.grid(column=0, row=4, sticky="n", padx=5, pady=5)
-        self.quality.grid(column=0, row=5, sticky="n", padx=5, pady=5)
-
-    def reset_fields(self):
-        self.comment['text'] = ""
-        self.quality['text'] = ""
-        self.input_text.delete("1.0", tk.END)
-        self.output_text.delete("1.0", tk.END)
-
-    def set_comment(self, text):
-        self.comment['text'] = text
-
-    def set_quality(self, text):
-        self.quality['text'] = text
-
-    def set_input_text(self, text):
-        self.input_text.delete("1.0", tk.END)
-        self.input_text.insert(tk.END, text)
-
-    def set_output_text(self, text):
-        self.output_text.delete("1.0", tk.END)
-        self.output_text.insert(tk.END, text)
-
-    def show(self):
-        self.root.mainloop()
-
-    def _combo_selected(self, event):
-        self.source_lang = self.selected_source_language.get()
-        print(f"selected: source language: {self.source_lang}.")
-        self.target_lang = self.selected_target_language.get()
-        print(f"selected: source language: {self.target_lang}.")
-
-    def _save_button_clicked(self):
+    def _save_language_settings(self):
         settings = {
-            "source language": self.source_lang,
-            "target language": self.target_lang,
+            "source language": self.source_language,
+            "target language": self.target_language
         }
         with open('settings.json', 'w') as file:
             json.dump(settings, file)
-        print("settings saved")
-        self.set_comment(f"Settings saved, source language: {self.source_lang}, target language: {self.target_lang}.")
 
-    def _button_clicked(self):
-        user_entry = self.input_text.get("1.0", tk.END)
-        if user_entry != "":
-            source = user_entry
-        else:
-            source = clip.paste()
-        self.presenter.translate(source, self.source_lang, self.target_lang)
+    def _load_language_settings(self):
+        with open('settings.json', 'r') as file:
+            try:
+                language_settings_file = json.load(file)
+                self.source_language = language_settings_file['source language']
+                self.target_language = language_settings_file['target language']
+                self.window['combo_source_lang'].update(value=self.source_language)
+                self.window['combo_target_lang'].update(value=self.target_language)
+            except:
+                print(e)
 
-    def _return_pressed(self, event):
-        self._button_clicked()
+    def update_element(self, key, text):
+        self.window[key].update(value=text)
+
+    def set_output_text(self, text):
+        # event, values = self.window.read()
+        print(text)
+        self.window['target_text'].update(value=text)
+
+    def set_comment(self, text):
+        self.window['comment'].update(value=text)
+
+    def set_key(self):
+        event, values = sg.Window('Login Window',
+                                  [[sg.T('Enter your API key'), sg.In(key='apikey')],
+                                   [sg.B('OK'), sg.B('Cancel')]]).read(close=True)
+
+        api_key = values['apikey']
+        settings = {
+            "api key": api_key
+        }
+        with open('key.json', 'w') as file:
+            json.dump(settings, file)
+
+        self.update_element('comment', "Key saved!")
 
     def show_info(self, title, message):
-        showinfo(title, message)
+        print("message", title, message)
+        sg.popup(message)
+        #showinfo(title, message)

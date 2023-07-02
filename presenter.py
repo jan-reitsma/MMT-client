@@ -12,26 +12,15 @@ class Presenter:
         self.view = view
 
     def translate(self, src, src_lang, trg_lang):
-        model.translate(src, src_lang, trg_lang)
+        print("presenter translate")
+        self.model.translate(src, src_lang, trg_lang)
 
     def reset_fields(self):
-        view.reset_fields()
+        self.view.reset_fields()
 
-    def set_comment(self, text):
-        view.set_comment(text)
-
-    def set_quality(self, text):
-        view.set_quality(text)
-
-    def set_output_text(self, text):
-        view.set_output_text(text)
-
-    def set_input_text(self, text):
-        view.set_input_text(text)
-
-    def set_output_field(self, value):
-        view.set_output_field(value)
+    def update_element(self, key, text):
+        self.view.update_element(key, text)
 
     def show_message(self, title, message):
-        view.show_info(title, message)
+        self.view.show_info(title, message)
 
