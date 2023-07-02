@@ -16,9 +16,9 @@ class View:
                   [sg.Text(key='comment')],
                   [sg.Text(key='quality')],
                 [sg.Text('Enter source text:')],
-                [sg.Multiline(key='source_text', size=(60,15))],
+                [sg.Multiline(key='source_text', size=(70,12))],
                 [sg.Text('Target text:')],
-                [sg.Multiline(key='target_text', size=(60,15))],
+                [sg.Multiline(key='target_text', size=(70,12))],
                 [sg.Submit(), sg.Button('Clear', key='clear'), sg.Button('Set Key', key='set_key'), sg.CloseButton('Close')]]
 
         self.window = sg.Window('MMT Client', layout)

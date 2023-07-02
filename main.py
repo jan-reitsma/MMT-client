@@ -1,6 +1,5 @@
 import model, view, presenter, json
 
-
 def read_api_key():
     with open('key.json', 'r') as file:
         try:
