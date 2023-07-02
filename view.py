@@ -10,8 +10,8 @@ class View:
         target_languages=['de', 'en', 'fr', 'nl']
         self.source_language = None
         self.target_language = None
-        layout = [[sg.Combo(source_languages, enable_events=True, default_value=None, readonly=True, key='combo_source_lang'),
-                  sg.Combo(target_languages, enable_events=True, default_value=None, readonly=True, key='combo_target_lang'), sg.Button
+        layout = [[sg.Text('Source language:'), sg.Combo(source_languages, enable_events=True, default_value=None, readonly=True, size=(5,1), key='combo_source_lang'),
+                  sg.Text('Target language:'), sg.Combo(target_languages, enable_events=True, default_value=None, readonly=True, size=(5,1), key='combo_target_lang'), sg.Button
                    ('Save', key='save_languages'), sg.Button('Load', key='load_languages')],
                   [sg.Text(key='comment')],
                   [sg.Text(key='quality')],

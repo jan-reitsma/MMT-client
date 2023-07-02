@@ -16,7 +16,7 @@ class Model:
         detected = ''
         # translate with source and target language:
         if src == "":
-            self.presenter.update_element('comment', "error, source can not be empty.")
+            self.presenter.update_element('comment', "Source can not be empty!")
         else:
             if src_lang == "auto":
                 try:
