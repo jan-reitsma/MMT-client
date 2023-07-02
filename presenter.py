@@ -11,6 +11,9 @@ class Presenter:
     def setView(self, view):
         self.view = view
 
+    def setKey(self):
+        self.view.set_key()
+
     def translate(self, src, src_lang, trg_lang):
         print("presenter translate")
         self.model.translate(src, src_lang, trg_lang)

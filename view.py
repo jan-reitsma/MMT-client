@@ -23,18 +23,16 @@ class View:
 
         self.window = sg.Window('MMT Client', layout)
 
+
     def show(self):
         self.show_window()
     def set_presenter(self, presenter):
         self.presenter = presenter
 
     def show_window(self):
-
-        # should be run window
-        # from here all methods should be called:
-        # translate, save settings, etc. arguments will be sent to presenter,
         while True:
             event, values = self.window.read()
+
             if self.source_language == None or self.target_language == None:
                 self._load_language_settings()
 
@@ -47,11 +45,11 @@ class View:
                     self.target_language = (values['combo_target_lang'])
                 case 'save_languages':
                     self._save_language_settings()
-                    print("settings saved: ", self.source_language, self.target_language)
+
                 case 'load_languages':
                     self._load_language_settings()
-                    print("settings loaded: ", self.source_language, self.target_language)
-                case 'Submit':
+
+                case 'Submit' | 'ALT-t':
                     self.presenter.translate(values['source_text'], self.source_language, self.target_language)
                 case 'clear':
                     for element in values:
@@ -70,8 +68,12 @@ class View:
             "source language": self.source_language,
             "target language": self.target_language
         }
+
         with open('settings.json', 'w') as file:
             json.dump(settings, file)
+
+        print("settings saved: ", self.source_language, self.target_language)
+        self.update_element('comment', "Settings saved!")
 
     def _load_language_settings(self):
         with open('settings.json', 'r') as file:
@@ -81,6 +83,10 @@ class View:
                 self.target_language = language_settings_file['target language']
                 self.window['combo_source_lang'].update(value=self.source_language)
                 self.window['combo_target_lang'].update(value=self.target_language)
+                print("settings loaded: ", self.source_language, self.target_language)
+
+                self.update_element('comment', "Settings loaded!")
+
             except:
                 print(e)
 
@@ -107,7 +113,7 @@ class View:
         with open('key.json', 'w') as file:
             json.dump(settings, file)
 
-        self.update_element('comment', "Key saved!")
+        self.update_element('comment', "Key saved! Please restart me.")
 
     def show_info(self, title, message):
         print("message", title, message)

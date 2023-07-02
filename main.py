@@ -1,7 +1,18 @@
-import key, model, view, presenter
+import model, view, presenter, json
 
-APIKey = key.key
-model = model.Model(APIKey)
+
+def read_api_key():
+    with open('key.json', 'r') as file:
+        try:
+            settings_file = json.load(file)
+            api_key = settings_file['api key']
+
+            return settings_file['api key']
+        except:
+            print("ERROR MAIN: can not load api key!")
+
+key = read_api_key()
+model = model.Model(key)
 view = view.View()
 pres = presenter.Presenter(model, view)
 
