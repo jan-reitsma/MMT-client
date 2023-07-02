@@ -1,20 +1,8 @@
 import model, view, presenter, json
 
-def read_api_key():
-    with open('key.json', 'r') as file:
-        try:
-            settings_file = json.load(file)
-            api_key = settings_file['api key']
 
-            return settings_file['api key']
-        except:
-            print("ERROR MAIN: can not load api key!")
 
-key = read_api_key()
-model = model.Model(key)
-view = view.View()
-pres = presenter.Presenter(model, view)
+key = "7763DBAD-DB02-9C5C-5DA0-B543BE3D7D34"
+#key = read_api_key()
 
-model.set_presenter(pres)
-view.set_presenter(pres)
-view.show()
+presenter.Presenter(key)

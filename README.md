@@ -12,11 +12,12 @@ so why bother creating this tool?
 As a technical translator I am using CAT tools and which integrate
 machine translation services already. 
 But for quick lookup of words, sentences, during work, this is a handy tool. 
-Useful information: the window shows a quality estimation below each translation.
+Useful information: the window shows a quality estimation for each translation.
 
-Settings are stored in in _settings.json_ . The api key will be stored in a file __key.json__
+Settings are stored in in _settings.json_ . 
+The api key will be stored in a file __key.json__
 
-As it is possible to upload your own translation memories to the ModernMT server, 
-and utilize them, I will improve this tool in future and add functionality 
+As it is possible to upload your own translation memories in TMX format to the ModernMT server 
+and utilize them, I intend to improve this tool in future and add functionality 
 to utilize your own translation memories.
 

@@ -10,8 +10,8 @@ class View:
         target_languages=['de', 'en', 'fr', 'nl']
         self.source_language = None
         self.target_language = None
-        layout = [[sg.Combo(source_languages, enable_events=True, default_value=None, key='combo_source_lang'),
-                  sg.Combo(target_languages, enable_events=True, default_value=None, key='combo_target_lang'), sg.Button
+        layout = [[sg.Combo(source_languages, enable_events=True, default_value=None, readonly=True, key='combo_source_lang'),
+                  sg.Combo(target_languages, enable_events=True, default_value=None, readonly=True, key='combo_target_lang'), sg.Button
                    ('Save', key='save_languages'), sg.Button('Load', key='load_languages')],
                   [sg.Text(key='comment')],
                   [sg.Text(key='quality')],
@@ -21,8 +21,10 @@ class View:
                 [sg.Multiline(key='target_text', size=(70,12))],
                 [sg.Submit(), sg.Button('Clear', key='clear'), sg.Button('Set Key', key='set_key'), sg.CloseButton('Close')]]
 
-        self.window = sg.Window('MMT Client', layout)
-
+        self.window = sg.Window('MMT Client', layout, finalize=True)
+        self._load_language_settings()
+        self.window.bind("<Alt_L><Return>","alt-L-return")
+        self.window.bind("<Alt_L><c>","alt-L-c")
 
     def show(self):
         self.show_window()
@@ -41,23 +43,27 @@ class View:
             match event:
                 case 'combo_source_lang':
                     self.source_language = (values['combo_source_lang'])
+
                 case 'combo_target_lang':
                     self.target_language = (values['combo_target_lang'])
+
                 case 'save_languages':
                     self._save_language_settings()
 
                 case 'load_languages':
                     self._load_language_settings()
 
-                case 'Submit' | 'ALT-t':
+                case 'Submit' | 'alt-L-return':
                     self.presenter.translate(values['source_text'], self.source_language, self.target_language)
-                case 'clear':
+
+                case 'clear' | 'alt-L-c':
                     for element in values:
-                        self.update_element(element, '')
+                        if element not in ['combo_source_lang', 'combo_target_lang']:
+                            self.update_element(element, '')
+
                 case 'set_key':
                     self.set_key()
-                case 'set_key':
-                    pass
+
             if event == sg.WIN_CLOSED or event == 'Exit':
                 break
 
@@ -72,7 +78,7 @@ class View:
         with open('settings.json', 'w') as file:
             json.dump(settings, file)
 
-        print("settings saved: ", self.source_language, self.target_language)
+        print("LOG-V: settings saved: ", self.source_language, self.target_language)
         self.update_element('comment', "Settings saved!")
 
     def _load_language_settings(self):
@@ -105,17 +111,17 @@ class View:
         event, values = sg.Window('Login Window',
                                   [[sg.T('Enter your API key'), sg.In(key='apikey')],
                                    [sg.B('OK'), sg.B('Cancel')]]).read(close=True)
+        if event == 'OK':
+            api_key = values['apikey']
+            settings = {
+                "api key": api_key
+            }
+            with open('key.json', 'w') as file:
+                json.dump(settings, file)
 
-        api_key = values['apikey']
-        settings = {
-            "api key": api_key
-        }
-        with open('key.json', 'w') as file:
-            json.dump(settings, file)
+            self.update_element('comment', "Key saved! Please restart me.")
 
-        self.update_element('comment', "Key saved! Please restart me.")
+            self.presenter.reset_model()
 
     def show_info(self, title, message):
-        print("message", title, message)
         sg.popup(message)
-        #showinfo(title, message)

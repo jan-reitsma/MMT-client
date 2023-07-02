@@ -1,6 +1,5 @@
 import pyperclip as clip
 from modernmt import ModernMT
-import json
 
 class Model:
     def __init__(self, key):
@@ -13,10 +12,7 @@ class Model:
     def set_presenter(self, pres):
         self.presenter = pres
 
-
-
     def translate(self, src, src_lang, trg_lang):
-        print("model translate")
         detected = ''
         # translate with source and target language:
         if src == "":
