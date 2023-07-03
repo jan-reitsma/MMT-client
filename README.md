@@ -1,23 +1,23 @@
-### GUI client for ModernMT machine translation API
+# GUI client for ModernMT machine translation API
 
-![Screenshot.png](Screenshot.png)
+![Screenshot 2023-07-03 102927.png](Screenshot%202023-07-03%20102927.png)
 
 Note: You will need a paid subscription from [https://www.modernmt.com]() for this tool to work.
 
-API documentation by modernmt can be found here:
+ModernMT API documentation can be found here:
 [https://www.modernmt.com/api/]()
 
-There are countless machine translation services freely available, 
-so why bother creating this tool?
-As a technical translator I am using CAT tools and which integrate
-machine translation services already. 
-But for quick lookup of words, sentences, during work, this is a handy tool. 
-Useful information: the window shows a quality estimation for each translation.
+Why did I create this tool? 
+As a technical translator I am using CAT tools that can use
+machine translation APIs. However, it was useful for me to have a quick manual lookup tool in all languages that are relevant for me.
+The tool is pretty much self-explanatory.
 
-Settings are stored in in _settings.json_ . 
-The api key will be stored in a file __key.json__
+## Features:
+1. Window shows quality estimation of each translation.
+2. Translation are always copied to the clipboard 
+3. Easy to handle with keyboard (Alt-Enter for translate, Alt-C for clear)
+4. Settings (top line) are stored in __settings.json__ 
+5. the API Key is stored in __api.json__
 
-As it is possible to upload your own translation memories in TMX format to the ModernMT server 
-and utilize them, I intend to improve this tool in future and add functionality 
-to utilize your own translation memories.
-
+## Features to be implemented in future:
+6. MT adaptation: use your own TMX files to improve the MT output
