@@ -101,14 +101,6 @@ class View:
     def update_element(self, key, text):
         self.window[key].update(value=text)
 
-    def set_output_text(self, text):
-        # event, values = self.window.read()
-        print(text)
-        self.window['target_text'].update(value=text)
-
-    def set_comment(self, text):
-        self.window['comment'].update(value=text)
-
     def set_key(self):
         event, values = sg.Window('Login Window',
                                   [[sg.T('Enter your API key'), sg.In(key='apikey')],
