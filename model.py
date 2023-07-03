@@ -22,7 +22,7 @@ class Model:
                     response = self.mmt.detect_language(src)
                     src_lang = response.detectedLanguage
                     print("LOG-M: language detected:", src_lang)
-                    self.presenter.update_element('source text label', 'Source text (' + src_lang + '):')
+
                 except Exception as e:
                     print(e)
                     self.presenter.show_message("error", e)
@@ -38,6 +38,7 @@ class Model:
                 clip.copy(translation)
 
                 # filling the fields in the GUI
+                self.presenter.update_element('source text label', 'Source text (' + src_lang + '):')
                 self.presenter.update_element('target text label', 'Target text (' + trg_lang +'):')
                 self.presenter.update_element('target_text', translation)
                 self.presenter.update_element('quality', score)
