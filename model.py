@@ -7,7 +7,7 @@ class Model:
         self.presenter = None
         self.source_lang = ''
         self.target_lang = ''
-        print("Model init ok")
+        print("LOG-M: Model init ok")
 
     def set_presenter(self, pres):
         self.presenter = pres
@@ -22,8 +22,9 @@ class Model:
                 try:
                     response = self.mmt.detect_language(src)
                     src_lang = response.detectedLanguage
-                    detected = 'Source language detected: ' + src_lang + '. '
-                    print("detected", detected)
+                    #detected = 'Source language detected: ' + src_lang + '. '
+                    print("LOG-M: language detected:", detected)
+                    self.presenter.update_element('source text label', 'Source text (' + src_lang + '):')
                 except Exception as e:
                     print(e)
                     self.presenter.show_message("error", e)
@@ -31,7 +32,6 @@ class Model:
             try:
                 result = self.mmt.translate(src_lang, trg_lang, src)
                 translation = result.translation
-                print("translation", translation)
                 quality_estimation = self.mmt.qe(src_lang, trg_lang, src, translation)
                 score = f"Quality estimation: {quality_estimation.score}"
 
@@ -39,11 +39,10 @@ class Model:
                 clip.copy(translation)
 
                 # filling the fields in the GUI
-                self.presenter.update_element('quality', score)
+                self.presenter.update_element('target text label', 'Target text (' + trg_lang +'):')
                 self.presenter.update_element('target_text', translation)
-
-                comment_string = detected + 'Translation copied to clipboard.'
-                self.presenter.update_element('comment', comment_string)
+                self.presenter.update_element('quality', score)
+                self.presenter.update_element('comment', 'Translation copied to clipboard')
 
             except Exception as e:
                 print(e)

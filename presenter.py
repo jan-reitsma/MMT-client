@@ -36,7 +36,6 @@ class Presenter:
 
 
     def translate(self, src, src_lang, trg_lang):
-        print("presenter translate")
         self.model.translate(src, src_lang, trg_lang)
 
     def update_element(self, key, text):

@@ -15,11 +15,11 @@ class View:
                    ('Save', key='save_languages'), sg.Button('Load', key='load_languages')],
                   [sg.Text(key='comment')],
                   [sg.Text(key='quality')],
-                [sg.Text('Enter source text:')],
+                [sg.Text('Enter source text:', key='source text label')],
                 [sg.Multiline(key='source_text', size=(70,12))],
-                [sg.Text('Target text:')],
+                [sg.Text('Target text:', key='target text label')],
                 [sg.Multiline(key='target_text', size=(70,12))],
-                [sg.Submit(), sg.Button('Clear', key='clear'), sg.Button('Set Key', key='set_key'), sg.CloseButton('Close')]]
+                [sg.Submit('Submit (Alt-Enter)'), sg.Button('Clear (Alt-C)', key='clear'), sg.Button('Set Key', key='set_key'), sg.CloseButton('Close')]]
 
         self.window = sg.Window('MMT Client', layout, finalize=True)
         self._load_language_settings()
@@ -89,7 +89,7 @@ class View:
                 self.target_language = language_settings_file['target language']
                 self.window['combo_source_lang'].update(value=self.source_language)
                 self.window['combo_target_lang'].update(value=self.target_language)
-                print("settings loaded: ", self.source_language, self.target_language)
+                print("LOG-V: settings loaded: ", self.source_language, self.target_language)
 
                 self.update_element('comment', "Settings loaded!")
 
@@ -119,7 +119,7 @@ class View:
             with open('key.json', 'w') as file:
                 json.dump(settings, file)
 
-            self.update_element('comment', "Key saved! Please restart me.")
+            self.update_element('comment', "Key saved!")
 
             self.presenter.reset_model()
 
