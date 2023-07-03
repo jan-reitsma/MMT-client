@@ -1,6 +1,6 @@
 # GUI client for ModernMT machine translation API
 
-![Screenshot 2023-07-03 102927.png](Screenshot%202023-07-03%20102927.png)
+![Screenshot.png](Screenshot.png)
 
 Note: You will need a paid subscription from [https://www.modernmt.com]() for this tool to work.
 
