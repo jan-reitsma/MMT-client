@@ -13,7 +13,6 @@ class Model:
         self.presenter = pres
 
     def translate(self, src, src_lang, trg_lang):
-        detected = ''
         # translate with source and target language:
         if src == "":
             self.presenter.update_element('comment', "Source can not be empty!")
@@ -22,12 +21,12 @@ class Model:
                 try:
                     response = self.mmt.detect_language(src)
                     src_lang = response.detectedLanguage
-                    #detected = 'Source language detected: ' + src_lang + '. '
-                    print("LOG-M: language detected:", detected)
+                    print("LOG-M: language detected:", src_lang)
                     self.presenter.update_element('source text label', 'Source text (' + src_lang + '):')
                 except Exception as e:
                     print(e)
                     self.presenter.show_message("error", e)
+                    raise
 
             try:
                 result = self.mmt.translate(src_lang, trg_lang, src)

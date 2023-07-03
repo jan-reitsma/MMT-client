@@ -19,15 +19,16 @@ class View:
                 [sg.Multiline(key='source_text', size=(70,12))],
                 [sg.Text('Target text:', key='target text label')],
                 [sg.Multiline(key='target_text', size=(70,12))],
-                [sg.Submit('Submit (Alt-Enter)'), sg.Button('Clear (Alt-C)', key='clear'), sg.Button('Set Key', key='set_key'), sg.CloseButton('Close')]]
+                [sg.Submit('Submit (Alt-Enter)', key='submit'), sg.Button('Clear (Alt-C)', key='clear'), sg.Button('Set Key', key='set_key'), sg.CloseButton('Close')]]
 
         self.window = sg.Window('MMT Client', layout, finalize=True)
         self._load_language_settings()
-        self.window.bind("<Alt_L><Return>","alt-L-return")
-        self.window.bind("<Alt_L><c>","alt-L-c")
+        self.window.bind("<Alt_L><Return>" , "alt-L-return")
+        self.window.bind("<Alt_L><c>" , "alt-L-c")
 
     def show(self):
         self.show_window()
+
     def set_presenter(self, presenter):
         self.presenter = presenter
 
@@ -53,7 +54,8 @@ class View:
                 case 'load_languages':
                     self._load_language_settings()
 
-                case 'Submit' | 'alt-L-return':
+                case 'submit' | 'alt-L-return':
+                    print("LOG-V: submit pressed")
                     self.presenter.translate(values['source_text'], self.source_language, self.target_language)
 
                 case 'clear' | 'alt-L-c':
@@ -93,8 +95,8 @@ class View:
 
                 self.update_element('comment', "Settings loaded!")
 
-            except:
-                print(e)
+            except Exception as e:
+                self.show_info("error", e)
 
     def update_element(self, key, text):
         self.window[key].update(value=text)
