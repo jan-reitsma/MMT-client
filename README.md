@@ -2,7 +2,7 @@
 
 ![Screenshot.png](Screenshot.png)
 
-Note: You will need a paid subscription from [https://www.modernmt.com]() for this tool to work.
+Note: You will need a paid subscription from [https://www.modernmt.com](https://www.modernmt.com) for this tool to work.
 
 ModernMT API documentation can be found here:
 [https://www.modernmt.com/api/](https://www.modernmt.com/api/)
