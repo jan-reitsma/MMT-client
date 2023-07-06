@@ -3,6 +3,11 @@ import json
 import pyperclip as clip
 sg.theme('DarkBlack')
 
+
+def show_info(title, message):
+    sg.popup(message)
+
+
 class View:
     def __init__(self):
         self.presenter = None
@@ -10,8 +15,10 @@ class View:
         target_languages=['de', 'en', 'fr', 'nl']
         self.source_language = None
         self.target_language = None
-        layout = [[sg.Text('Source language:'), sg.Combo(source_languages, enable_events=True, default_value=None, readonly=True, size=(5,1), key='combo_source_lang'),
-                  sg.Text('Target language:'), sg.Combo(target_languages, enable_events=True, default_value=None, readonly=True, size=(5,1), key='combo_target_lang'), sg.Button
+        layout = [[sg.Text('Source language:'), sg.Combo(source_languages, enable_events=True, default_value=None,
+                                                         readonly=True, size=(5,1), key='combo_source_lang'),
+                  sg.Text('Target language:'), sg.Combo(target_languages, enable_events=True, default_value=None,
+                                                        readonly=True, size=(5,1), key='combo_target_lang'), sg.Button
                    ('Save', key='save_languages'), sg.Button('Load', key='load_languages')],
                   [sg.Text(key='comment')],
                   [sg.Text(key='quality')],
@@ -35,6 +42,7 @@ class View:
     def show_window(self):
         while True:
             event, values = self.window.read()
+            # print("LOG-V:", event, values)
 
             if self.source_language == None or self.target_language == None:
                 self._load_language_settings()
@@ -59,9 +67,10 @@ class View:
                     self.presenter.translate(values['source_text'], self.source_language, self.target_language)
 
                 case 'clear' | 'alt-L-c':
-                    for element in values:
-                        if element not in ['combo_source_lang', 'combo_target_lang']:
-                            self.update_element(element, '')
+                    for key in ['comment', 'quality', 'source_text', 'target_text']:
+                             self.update_element(key, '')
+                    self.update_element('source text label', 'Enter source text:' )
+                    self.update_element('target text label', 'Target text:')
 
                 case 'set_key':
                     self.set_key()
@@ -96,7 +105,7 @@ class View:
                 self.update_element('comment', "Settings loaded!")
 
             except Exception as e:
-                self.show_info("error", e)
+                show_info("error", e)
 
     def update_element(self, key, text):
         self.window[key].update(value=text)
@@ -117,5 +126,3 @@ class View:
 
             self.presenter.reset_model()
 
-    def show_info(self, title, message):
-        sg.popup(message)

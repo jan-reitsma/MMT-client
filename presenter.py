@@ -42,5 +42,5 @@ class Presenter:
         self.view.update_element(key, text)
 
     def show_message(self, title, message):
-        self.view.show_info(title, message)
+        show_info(title, message)
 
