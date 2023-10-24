@@ -9,7 +9,7 @@ def show_info(title, message):
 
 
 class View:
-    def __init__(self):
+    def __init__(self, apikey_set=True):
         self.presenter = None
         source_languages=['de', 'en', 'fr', 'nl', 'auto']
         target_languages=['de', 'en', 'fr', 'nl']
@@ -26,12 +26,14 @@ class View:
                 [sg.Multiline(key='source_text', size=(70,12))],
                 [sg.Text('Target text:', key='target text label')],
                 [sg.Multiline(key='target_text', size=(70,12))],
-                [sg.Submit('Submit (Alt-Enter)', key='submit'), sg.Button('Clear (Alt-C)', key='clear'), sg.Button('Set Key', key='set_key'), sg.CloseButton('Close')]]
+                [sg.Submit('Submit (Alt-Enter)', key='submit'), sg.Button('Clear (Alt-C)', key='clear'),
+                 sg.Button('Set Key', key='set_key'), sg.CloseButton('Close')]]
 
         self.window = sg.Window('MMT Client', layout, finalize=True)
-        self._load_language_settings()
+        #self._load_language_settings()
         self.window.bind("<Alt_L><Return>" , "alt-L-return")
         self.window.bind("<Alt_L><c>" , "alt-L-c")
+        self.apikey_set = apikey_set
 
     def show(self):
         self.show_window()
@@ -40,16 +42,22 @@ class View:
         self.presenter = presenter
 
     def show_window(self):
+        if not self.apikey_set:
+            self.update_element('comment', 'No valid API key. Please set your API key first!')
+            print("LOG-V: no api key set.")
+            self.set_key()
+
         while True:
             event, values = self.window.read()
             # print("LOG-V:", event, values)
 
             if self.source_language == None or self.target_language == None:
-                self._load_language_settings()
+               self._load_language_settings()
 
             # print(values['source_text'])
             # self.window['target_text'].update(value='xxx')
             match event:
+
                 case 'combo_source_lang':
                     self.source_language = (values['combo_source_lang'])
 
@@ -101,7 +109,6 @@ class View:
                 self.window['combo_source_lang'].update(value=self.source_language)
                 self.window['combo_target_lang'].update(value=self.target_language)
                 print("LOG-V: settings loaded: ", self.source_language, self.target_language)
-
                 self.update_element('comment', "Settings loaded!")
 
             except Exception as e:

@@ -3,22 +3,19 @@ from view import View
 import json
 
 class Presenter:
-    def __init__(self, key):
-        self.model = Model(key)
+    def __init__(self):
+        self.model = Model()
+        if not self.model.set_engine():
+            self.view = View(False)
+        else:
+            self.view = View()
+
         self.model.set_presenter(self)
-        self.view = View()
         self.view.set_presenter(self)
         self.view.show()
 
     def reset_model(self):
-        with open('key.json', 'r') as file:
-            try:
-                settings_file = json.load(file)
-                key = settings_file['api key']
-                self.model = Model(key)
-                print("LOG-P: API key set to: ", key)
-            except:
-                print("ERROR-P: can not load api key!")
+        self.model.set_engine()
 
     def setView(self, view):
         self.view = view
@@ -42,5 +39,5 @@ class Presenter:
         self.view.update_element(key, text)
 
     def show_message(self, title, message):
-        show_info(title, message)
+        self.view.update_element('comment', message)
 

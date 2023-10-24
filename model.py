@@ -1,16 +1,42 @@
 import pyperclip as clip
+import json
 from modernmt import ModernMT
 
+# in class Model, read key file. If no key file or wrong key file, warning to presenter, to view.
+# 1 . create model, model reads file.
+# 2. if ok, then continue
+# 3. if file not exist of corrupt, send message to presenter
+# 4. in this case presenter lets view display popup
+# 5. if popupclosed, view sends message to presenter, presenter updates model
+
 class Model:
-    def __init__(self, key):
-        self.mmt = ModernMT(key)
+    def __init__(self):
+        self.mmt = None
         self.presenter = None
         self.source_lang = ''
         self.target_lang = ''
-        print("LOG-M: Model init ok")
 
     def set_presenter(self, pres):
         self.presenter = pres
+
+    def set_engine(self):
+        try:
+            with open('key.json', 'r') as file:
+                try:
+                    settings_file = json.load(file)
+                    key = settings_file['api key']
+                except json.decoder.JSONDecodeError:
+                    print("LOG-M: Model error: json file is bad")
+                    return False
+                except KeyError:
+                    return False
+        except FileNotFoundError:
+            print("LOG-M: Key file not found")
+            return False
+        self.mmt = ModernMT(key)
+        print("LOG-M: Model engine init")
+        return True
+
 
     def translate(self, src, src_lang, trg_lang):
         # translate with source and target language:
@@ -47,4 +73,3 @@ class Model:
             except Exception as e:
                 print(e)
                 self.presenter.show_message("error", e)
-                raise
