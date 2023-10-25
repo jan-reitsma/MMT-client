@@ -20,7 +20,7 @@ Why did I create this tool? 2 Reasons:
 
 ### Saving your settings
 * Source and target language settings (top line) can be stored in __settings.json__
-* The API Key is stored in __api.json__
+* The API Key is stored in __api.json__ (not included here)
 
 ### Features I might implement in future:
 * MT adaptation: upload TMX files to improve the MT output
