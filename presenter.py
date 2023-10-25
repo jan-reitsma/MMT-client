@@ -23,15 +23,6 @@ class Presenter:
     def setKey(self):
         self.view.set_key()
 
-    def read_api_key():
-        with open('key.json', 'r') as file:
-            try:
-                settings_file = json.load(file)
-                return settings_file['api key']
-            except:
-                print("ERROR-P: can not load api key!")
-
-
     def translate(self, src, src_lang, trg_lang):
         self.model.translate(src, src_lang, trg_lang)
 
